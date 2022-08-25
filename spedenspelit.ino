@@ -26,6 +26,7 @@ TM1637Display display(CLK, DIO);
 
 // new lights here
 int lightArray[100];
+// button presses here
 int buttonArray[100];
 int points = 0;
 int pressed = 0;
@@ -34,33 +35,44 @@ int prevPressed = 0; // keep this also
 float timepassed = 0;
 float lightTimePassed = 0;
 
+bool gameOn = false;
+int last = 0;
+
+int buttonIndex = 0;
+int lightIndex = 0;
+// when ever light is light, we add here the accumulating number
+float addition = 0;
+int burningLight = 0; // what light is burning
+int lightIsOnRotations = 12; // how many rotations light is burning
+int delayOfRound = 20; // ms
+
 void allOn()
 {
-    digitalWrite(LYELLOW,HIGH);
-    digitalWrite(LRED,HIGH);
-    digitalWrite(LGREEN,HIGH);
-    digitalWrite(LWHITE,HIGH);
+  digitalWrite(LYELLOW, HIGH);
+  digitalWrite(LRED, HIGH);
+  digitalWrite(LGREEN, HIGH);
+  digitalWrite(LWHITE, HIGH);
 }
 
 void allOff()
 {
-    digitalWrite(LYELLOW,LOW);
-    digitalWrite(LRED,LOW);
-    digitalWrite(LGREEN,LOW);
-    digitalWrite(LWHITE,LOW);
+  digitalWrite(LYELLOW, LOW);
+  digitalWrite(LRED, LOW);
+  digitalWrite(LGREEN, LOW);
+  digitalWrite(LWHITE, LOW);
 }
 
 void setup()
 {
-  pinMode(LYELLOW,OUTPUT);
-  pinMode(LRED,OUTPUT);
-  pinMode(LGREEN,OUTPUT);
-  pinMode(LWHITE,OUTPUT);
+  pinMode(LYELLOW, OUTPUT);
+  pinMode(LRED, OUTPUT);
+  pinMode(LGREEN, OUTPUT);
+  pinMode(LWHITE, OUTPUT);
 
-  pinMode(BYELLOW,INPUT);
-  pinMode(BRED,INPUT);
-  pinMode(BGREEN,INPUT);
-  pinMode(BWHITE,INPUT);
+  pinMode(BYELLOW, INPUT);
+  pinMode(BRED, INPUT);
+  pinMode(BGREEN, INPUT);
+  pinMode(BWHITE, INPUT);
   Serial.begin(9600);
 
   display.setBrightness(0x0f);
@@ -71,13 +83,13 @@ void setup()
     delay(200);
   }
 
-  digitalWrite(LYELLOW,HIGH);
+  digitalWrite(LYELLOW, HIGH);
   delay(200);
-  digitalWrite(LRED,HIGH);
+  digitalWrite(LRED, HIGH);
   delay(200);
-  digitalWrite(LGREEN,HIGH);
+  digitalWrite(LGREEN, HIGH);
   delay(200);
-  digitalWrite(LWHITE,HIGH);
+  digitalWrite(LWHITE, HIGH);
   delay(200);
   allOff();
 }
@@ -103,7 +115,7 @@ void loop()
 
 void runEndGame()
 {
-  
+
   for (int i = 0; i <= 2; i++) {
     allOn();
     delay(200);
@@ -120,41 +132,39 @@ void runEndGame()
 }
 
 /**
- * float howHard - bigger the easier this is ms
- */
+   float howHard - bigger the easier this is ms
+*/
 void playgame(float howHard)
 {
   delay(1000);
   points = 0;
   timepassed = 0;
   lightTimePassed = 0;
-  bool gameOn = true;
+  gameOn = true;
 
-  int last = 0;
+  last = 0;
   randomLightArray(100, last);
   // keep track o clicks here
   memset(buttonArray, 0, sizeof(buttonArray));
   memcpy( buttonArray, lightArray, sizeof(buttonArray));
-  int buttonIndex = 0;
-  int lightIndex = 0;
+  buttonIndex = 0;
+  lightIndex = 0;
   // when ever light is light, we add here the accumulating number
-  float lightTimePassed = 0;
-  float addition = 0;
-  int burningLight = 4; // what light is burning
-  int lightIsOnRotations = 5; // how many rotations light is burning
+  lightTimePassed = 0;
+  addition = 0;
+  burningLight = 4; // what light is burning
   display.showNumberDec(points, false);
-  bool isTimeToLightNext = false;
 
   do {
-    delay(20);
-    timepassed += 20;
+    delay(delayOfRound);
+    timepassed += delayOfRound;
     // button listener
     pressed = whatIsPressed();
     if (prevPressed != pressed && pressed > 0) {
-//      Serial.println("-------------");
-//      Serial.println(pressed);
-//      Serial.println(lightArray[buttonIndex])
-//      Serial.println(buttonArray[buttonIndex]);
+      Serial.println("-------------");
+      Serial.println(pressed);
+      Serial.println(lightArray[buttonIndex]);
+      Serial.println(buttonArray[buttonIndex]);
       if (pressed == buttonArray[buttonIndex]) {
         points++;
         display.showNumberDec(points, false);
@@ -170,7 +180,7 @@ void playgame(float howHard)
       digitalWrite(burningLight, LOW);
     }
     lightIsOnRotations--;
-    
+
     // is it time to light up
     addition = getAddition(lightIndex, howHard);
     if (timepassed > (lightTimePassed + addition)) {
@@ -194,15 +204,15 @@ void playgame(float howHard)
       memcpy( buttonArray, lightArray, sizeof(buttonArray));
       buttonIndex = 0;
     }
-  } while(gameOn);
+  } while (gameOn);
 }
 
 /**
- * 1000 passed light something with howHard
- * lightIndex = 0 first 
- * timepassed 1000
- * howHard is time in millis which we multiply
- */
+   1000 passed light something with howHard
+   lightIndex = 0 first
+   timepassed 1000
+   howHard is time in millis which we multiply
+*/
 float getAddition(int lightIndex, float howHard)
 {
   // 2 - ln(index) / 2
@@ -223,28 +233,28 @@ int whatIsPressed()
     return LYELLOW;
   }
   if (rState == HIGH) {
-    return LRED; 
+    return LRED;
   }
   if (gState == HIGH) {
     return LGREEN;
   }
   if (wState == HIGH) {
-    return LWHITE; 
+    return LWHITE;
   }
   return 0;
 }
 
 /**
- * returns an array sizeOf, where first is notThis
- */
+   returns an array sizeOf, where first is notThis
+*/
 void randomLightArray(int sizeOf, int notThis)
 {
   memset(lightArray, 0, sizeof(lightArray));
   int nextLight = notThis;
-  for (int i = 0; i < sizeOf;i++) {
+  for (int i = 0; i < sizeOf; i++) {
     do {
       nextLight = random(4, 8);
-    } while(nextLight == notThis);
+    } while (nextLight == notThis);
     lightArray[i] = nextLight;
     notThis = nextLight;
   }
