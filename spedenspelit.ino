@@ -216,7 +216,7 @@ void playgame(float howHard)
 float getAddition(int lightIndex, float howHard)
 {
   // 2 - ln(index) / 2
-  float addition = round(2 - log(lightIndex) / 2) * howHard;
+  float addition = round((2 - log(lightIndex) / 2) * howHard);
   if (addition < howHard) {
     return howHard;
   }
