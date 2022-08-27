@@ -161,10 +161,10 @@ void playgame(float howHard)
     // button listener
     pressed = whatIsPressed();
     if (prevPressed != pressed && pressed > 0) {
-      Serial.println("-------------");
-      Serial.println(pressed);
-      Serial.println(lightArray[buttonIndex]);
-      Serial.println(buttonArray[buttonIndex]);
+//      Serial.println("-------------");
+//      Serial.println(pressed);
+//      Serial.println(lightArray[buttonIndex]);
+//      Serial.println(buttonArray[buttonIndex]);
       if (pressed == buttonArray[buttonIndex]) {
         points++;
         display.showNumberDec(points, false);
@@ -184,6 +184,8 @@ void playgame(float howHard)
     // is it time to light up
     addition = getAddition(lightIndex, howHard);
     if (timepassed > (lightTimePassed + addition)) {
+//      Serial.println(".....");
+//      Serial.println(addition);
       lightTimePassed = lightTimePassed + addition;
       digitalWrite(burningLight, LOW);
       burningLight = lightArray[lightIndex];
@@ -215,8 +217,8 @@ void playgame(float howHard)
 */
 float getAddition(int lightIndex, float howHard)
 {
-  // 2 - ln(index) / 2
-  float addition = round((2 - log(lightIndex) / 2) * howHard);
+  // 2 - ln(index) / 4
+  float addition = round((2 - (log((lightIndex+1)) / 4)) * howHard);
   if (addition < howHard) {
     return howHard;
   }
