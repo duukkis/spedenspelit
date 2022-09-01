@@ -24,10 +24,11 @@ int wState = 0;
 
 TM1637Display display(CLK, DIO);
 
+#define arraySize 100
 // new lights here
-int lightArray[100];
+int lightArray[arraySize];
 // button presses here
-int buttonArray[100];
+int buttonArray[arraySize];
 int points = 0;
 int pressed = 0;
 int prevPressed = 0; // keep this also
@@ -143,7 +144,7 @@ void playgame(float howHard)
   gameOn = true;
 
   last = 0;
-  randomLightArray(100, last);
+  randomLightArray(arraySize, last);
   // keep track o clicks here
   memset(buttonArray, 0, sizeof(buttonArray));
   memcpy( buttonArray, lightArray, sizeof(buttonArray));
@@ -196,13 +197,13 @@ void playgame(float howHard)
 
     // -------------------------------- populating more lights and buttons
     // get more random items when lights have been lit
-    if (lightIndex == 100) {
-      last = lightArray[99];
-      randomLightArray(100, last);
+    if (lightIndex == arraySize) {
+      last = lightArray[(arraySize-1)];
+      randomLightArray(arraySize, last);
       lightIndex = 0;
     }
     // when 100 buttons have been pressed
-    if (buttonIndex == 100) {
+    if (buttonIndex == arraySize) {
       memcpy( buttonArray, lightArray, sizeof(buttonArray));
       buttonIndex = 0;
     }
