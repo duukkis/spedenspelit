@@ -182,7 +182,7 @@ void playgame(float howHard)
     lightIsOnRotations--;
 
     // is it time to light up
-    addition = getAddition(lightIndex, howHard);
+    addition = getAddition(points, howHard);
     if (timepassed > (lightTimePassed + addition)) {
 //      Serial.println(".....");
 //      Serial.println(addition);
@@ -215,10 +215,10 @@ void playgame(float howHard)
    timepassed 1000
    howHard is time in millis which we multiply
 */
-float getAddition(int lightIndex, float howHard)
+float getAddition(int points, float howHard)
 {
   // 2 - ln(index) / 4
-  float addition = round((2 - (log((lightIndex+1)) / 4)) * howHard);
+  float addition = round((2 - (log((points+1)) / 4)) * howHard);
   if (addition < howHard) {
     return howHard;
   }
