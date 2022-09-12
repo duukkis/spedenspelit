@@ -44,8 +44,8 @@ int lightIndex = 0;
 // when ever light is light, we add here the accumulating number
 float addition = 0;
 int burningLight = 0; // what light is burning
-int lightIsOnRotations = 12; // how many rotations light is burning
-int delayOfRound = 20; // ms
+int lightIsOnRotations = 24; // how many rotations light is burning
+int delayOfRound = 10; // ms
 
 void allOn()
 {
@@ -142,12 +142,14 @@ void playgame(float howHard)
   timepassed = 0;
   lightTimePassed = 0;
   gameOn = true;
+  prevPressed = 0;
+  int rotations = 0;
 
   last = 0;
   randomLightArray(arraySize, last);
   // keep track o clicks here
   memset(buttonArray, 0, sizeof(buttonArray));
-  memcpy( buttonArray, lightArray, sizeof(buttonArray));
+  memcpy(buttonArray, lightArray, sizeof(lightArray));
   buttonIndex = 0;
   lightIndex = 0;
   // when ever light is light, we add here the accumulating number
@@ -177,10 +179,10 @@ void playgame(float howHard)
     }
 
     // -------------------------------- lights off and on
-    if (lightIsOnRotations == 0) {
+    if (rotations == 0) {
       digitalWrite(burningLight, LOW);
     }
-    lightIsOnRotations--;
+    rotations--;
 
     // is it time to light up
     addition = getAddition(points, howHard);
@@ -191,7 +193,7 @@ void playgame(float howHard)
       digitalWrite(burningLight, LOW);
       burningLight = lightArray[lightIndex];
       digitalWrite(burningLight, HIGH);
-      lightIsOnRotations = 12;
+      rotations = lightIsOnRotations;
       lightIndex++;
     }
 
